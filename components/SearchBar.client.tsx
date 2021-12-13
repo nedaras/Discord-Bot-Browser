@@ -18,15 +18,15 @@ interface ResultProps {
 
 const SearchBar: FC<Props> = () => {
 
-    const [ serouce, setResource ] = useState(() => getVideo('iX-QaNzd-0Y'))
+    const [ id, setId ] = useState(() => getVideo('iX-QaNzd-0Y'))
     const input = useRef<HTMLInputElement>(null)
 
     return <div>
         <input placeholder='Put the id of the video...' ref={input} />
         <Suspense fallback='Loading...'>
-            <Result videoSuspender={serouce} />
+            <Result videoSuspender={id} />
         </Suspense>
-        <button onClick={() => input.current && setResource(getVideo(input.current.value))} >Refresh data</button>
+        <button onClick={() => input.current && setId(getVideo(input.current.value))} >Refresh data</button>
     </div>
 
 }
