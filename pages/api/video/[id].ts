@@ -15,7 +15,7 @@ interface Query {
 export default async function handler(request: NextApiRequest, response: NextApiResponse<ApiResponse<Video>>) {
 
     const { id } = request.query as Query
-    console.log('incomming request ' + id);
+    console.log(`[pages/video/[id].ts] --> Incomming request with video id of: ${id}`);
     const url = `https://www.youtube.com/watch?v=${id}`
 
     const html = await fetchData(url).catch(() => undefined)
@@ -27,9 +27,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     })
 
-    response.status(411).json({
-        status: 411,
-        message: 'invalid id | id of the video is not valid'
+    response.status(400).json({
+        status: 400,
+        message: 'id of the video is not valid'
 
     })
 
