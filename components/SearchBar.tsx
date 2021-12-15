@@ -1,4 +1,4 @@
-import type { CSSProperties, FC } from 'react'
+import type {FC } from 'react'
 import { Suspense, useState, useRef, useEffect } from 'react'
 
 import type { ApiResponse, ResponseError } from '../@types/apiResponse'

@@ -3,8 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type Video from '../../../@types/video'
 import type { ApiResponse } from '../../../@types/apiResponse'
 
-import { toString as fetchData } from '../../../utils/fetchData'
-import { load } from 'cheerio'
+import fetchData from '../../../utils/fetchData'
+
+import { youtube_api_key as key } from '../../../keys.json'
 
 interface Query {
     [key: string]: string | string[]
@@ -12,20 +13,37 @@ interface Query {
 
 }
 
-// ! we need to use youtube api
+interface Snippet {
+    title: string
+    thumbnails: {
+        standard: {
+            url: string
+            width: number
+            height: number
+
+        }
+
+    }
+
+}
+
+interface YoutubeApiResponse { 
+    items: [ { snippet: Snippet } ] | [ undefined ]
+
+}
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse<ApiResponse<Video>>) {
 
     const { id } = request.query as Query
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${key}`
+
     console.log(`[pages/video/[id].ts] --> Incomming request with video id of: ${id}`);
-    const url = `https://www.youtube.com/watch?v=${id}`
 
-    const html = await fetchData(url).catch(() => undefined)
-    const [ title, imageSource ] = html ? getParmas(html) : [ undefined, undefined ]        
+    const data = (await fetchData<YoutubeApiResponse>(url).catch(() => ({ items: [] }))).items[0]
 
-    if (html && title && imageSource) return response.json({
-        title,
-        imageSource
+    if (data) return response.json({
+        title: data.snippet.title,
+        imageSource: data.snippet.thumbnails.standard.url
 
     })
 
@@ -35,15 +53,4 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     })
 
-}
-
-function getParmas(html: string): [ string | undefined, string | undefined ] {
-
-    const $ = load(html)
-
-    const title = $('meta[property="title"]').attr('content')
-    const imageSource = $('meta[property="og:image"]').attr('content')
-    
-    return [ title, imageSource ]
-    
 }

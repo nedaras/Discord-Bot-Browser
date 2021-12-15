@@ -8,7 +8,7 @@ import fetchData from './fetchData'
 
 export type VideoSuspender = PromiseSuspender<ApiResponse<Video>>
 
-export const getVideo = (id: string) => suspendPromise(() => fetchData<Video>(`http://localhost:3000/api/video/${id}`).catch(() => ({
+export const getVideo = (id: string) => suspendPromise(() => fetchData<ApiResponse<Video>>(`http://localhost:3000/api/video/${id}`).catch(() => ({
     status: 500,
     message: 'server cant fetch api'
 
