@@ -1,12 +1,12 @@
-import { FC } from 'react'
+import type { CSSProperties, FC } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 
-import type { ResponseError } from '../@types/apiResponse'
+import type { ApiResponse, ResponseError } from '../@types/apiResponse'
 
 import type { VideoSuspender } from '../utils/video'
-
 import { getVideo, getVideoId } from '../utils/video'
 
-import { Suspense, useState, useRef, useEffect } from 'react'
+import styles from '../styles/SearchBar.module.scss'
 
 interface Props {}
 interface ResultProps { input: string }
@@ -17,8 +17,10 @@ const SearchBar: FC<Props> = () => {
     const input = useRef<HTMLInputElement>(null)
     const [ value, setValue ] = useState('')
 
-    return <div>
-        <input placeholder='Put the id of the video...' onChange={() => setValue(input.current!.value.replace(/\s/g, '')) } ref={input} />
+    const border = { borderRadius: value === '' ? '1rem' : '1rem 1rem 0 0' }
+
+    return <div className={styles['search-bar']} >
+        <input  style={border} placeholder='Put url of the youtube video...' onChange={() => setValue(input.current!.value.replace(/\s/g, '')) } ref={input} />
         <Result input={value} />
     </div>
 
@@ -55,9 +57,9 @@ const Result: FC<ResultProps> = ({ input }) => {
 
     if (input !== '') {
         
-        return suspender ? <Suspense fallback='Loading...'>
+        return suspender ? <Suspense fallback={<div className={styles['response']} >...</div>} >
             <Fetcher video={suspender} />
-        </Suspense> : <p>Url Invalid</p>
+        </Suspense> : <div className={styles['response']} >We only accept Youtube URLs</div>
 
     }
     return null
@@ -68,17 +70,16 @@ const Fetcher: FC<FetcherProps> = ({ video }) => {
 
     const data = video.call()
 
-    console.log(data);
-    
+    if (isResponseAnError(data)) return <div className={styles['response']} >{ data.message }</div>
 
-    return !isResponseAnError(data) ? <div>
-        { data.title }
-        <img src={data.imageSource} />
-    </div> : <div>Error</div>
+    return <div className={styles['image-response']} style={{ backgroundImage: `url('${data.imageSource}')` }}  >
+        <div>{ data.title }</div>
+
+    </div>
 
 }
 
-function isResponseAnError(response: any): response is ResponseError {
+function isResponseAnError<T>(response: ApiResponse<T>): response is ResponseError {
 
     return (response as ResponseError).status !== undefined
 

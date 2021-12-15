@@ -12,6 +12,8 @@ interface Query {
 
 }
 
+// ! we need to use youtube api
+
 export default async function handler(request: NextApiRequest, response: NextApiResponse<ApiResponse<Video>>) {
 
     const { id } = request.query as Query
@@ -19,7 +21,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     const url = `https://www.youtube.com/watch?v=${id}`
 
     const html = await fetchData(url).catch(() => undefined)
-    const [ title, imageSource ] = html ? getParmas(html) : [ undefined, undefined ]
+    const [ title, imageSource ] = html ? getParmas(html) : [ undefined, undefined ]        
 
     if (html && title && imageSource) return response.json({
         title,
@@ -27,9 +29,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     })
 
-    response.status(400).json({
-        status: 400,
-        message: 'id of the video is not valid'
+    response.status(404).json({
+        status: 404,
+        message: 'Video was not found'
 
     })
 
@@ -39,9 +41,9 @@ function getParmas(html: string): [ string | undefined, string | undefined ] {
 
     const $ = load(html)
 
-    const title = $('meta[property="og:title"]').attr('content')
+    const title = $('meta[property="title"]').attr('content')
     const imageSource = $('meta[property="og:image"]').attr('content')
-
+    
     return [ title, imageSource ]
     
 }

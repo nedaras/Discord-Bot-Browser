@@ -5,7 +5,6 @@ import SearchBar from '../components/SearchBar'
 const Home: NextPage = () => {
 
     return <>
-
         <SearchBar />
     </>
 }

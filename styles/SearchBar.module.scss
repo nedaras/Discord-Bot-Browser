@@ -1,0 +1,57 @@
+@import './variable';
+
+.search-bar {
+    
+    max-width: 40rem;
+
+    input {
+
+        border: none;
+        outline: none;
+
+        padding: 0.5rem 1rem;
+        color: $theme-color;
+        font-size: inherit;
+
+        width: 100%;
+    
+    }
+
+    .response,
+    .image-response {
+
+        border-radius: 0 0 0.5rem 0.5rem;
+
+        font-size: 1.2em;
+        text-align: center;
+
+        color: $font-color;
+
+    }
+
+    .image-response {
+
+        background-size: cover;
+        background-position: center;
+        
+        div {
+            padding: 1rem 0;
+
+            background: rgb(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+
+            border-radius: 0 0 0.5rem 0.5rem;
+        
+        }
+
+    }
+        
+    .response {
+
+        padding: 1rem 0;
+
+        background: $theme-color;
+        
+    }
+
+}
