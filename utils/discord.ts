@@ -54,4 +54,4 @@ export async function getProfile(token: string){
 
 }
 
-const isResponseAnError = (response: JsonObject): response is ResponseError => (response as ResponseError).error != undefined
+const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).error != undefined
