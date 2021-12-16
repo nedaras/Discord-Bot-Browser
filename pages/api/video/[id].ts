@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type Video from '../../../@types/video'
 import type { ApiResponse } from '../../../@types/apiResponse'
 
-import fetchData from '../../../utils/fetchData'
+import { fetchData } from '../../../utils/fetchData'
 
 import { youtube_api_key as key } from '../../../keys.json'
 
@@ -43,7 +43,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     if (data) return response.json({
         title: data.snippet.title,
-        imageSource: data.snippet.thumbnails.standard.url
+        image_src: data.snippet.thumbnails.standard.url
 
     })
 

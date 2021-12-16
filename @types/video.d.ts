@@ -1,5 +1,5 @@
 export default interface Video {
     title: string
-    imageSource: string
+    image_src: string
 
 }

@@ -72,7 +72,7 @@ const Fetcher: FC<FetcherProps> = ({ video }) => {
 
     if (isResponseAnError(data)) return <div className={styles['response']} >{ data.message }</div>
 
-    return <div className={styles['image-response']} style={{ backgroundImage: `url('${data.imageSource}')` }}  >
+    return <div className={styles['image-response']} style={{ backgroundImage: `url('${data.image_src}')` }}  >
         <div>{ data.title }</div>
 
     </div>
