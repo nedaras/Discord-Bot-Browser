@@ -1,4 +1,4 @@
-type JsonObject = { [key: string]: any }
+import type { JsonObject } from '../@types'
 
 export async function fetchData<T extends JsonObject = JsonObject>(url: string, auth?: string): Promise<T> {
 

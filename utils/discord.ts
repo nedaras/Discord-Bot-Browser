@@ -1,24 +1,16 @@
-import { fetchData, postData } from './fetchData'
+import type { JsonObject } from '../@types'
+import type { DiscordProfile } from '../@types/discord'
+
+import { fetchData, postData } from './fetch-data'
 
 import auth from '../auth.json'
-
-type JsonObject = { [key: string]: any }
 
 interface DisocrdOAuth2Response {
     access_token: string
     expires_in: number
     refresh_token: string
-    scope: number
+    scope: string
     token_type: string
-
-}
-
-interface Profile {
-    id: string
-    username: string
-    avatar: string
-    email: string
-    verified: boolean
 
 }
 
@@ -41,6 +33,7 @@ export async function getToken(code: string) {
     }
 
     const response = await postData<DisocrdOAuth2Response | ResponseError>('https://discordapp.com/api/oauth2/token', data, 'x-www-form-urlencoded').catch(() => undefined)
+    
 
     if (response && !isResponseAnError(response)) return response.access_token
 
@@ -48,10 +41,10 @@ export async function getToken(code: string) {
 
 export async function getProfile(token: string){
 
-    const response = await fetchData<Profile | ResponseError>('https://discordapp.com/api/users/@me', `Bearer ${token}`).catch(() => undefined)
+    const response = await fetchData<DiscordProfile | ResponseError>('https://discordapp.com/api/users/@me', `Bearer ${token}`).catch(() => undefined)
 
     if (response && !isResponseAnError(response)) return response
 
 }
 
-const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).error != undefined
+const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).error !== undefined
