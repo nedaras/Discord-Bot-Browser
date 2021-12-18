@@ -9,7 +9,6 @@ import service from '../firebase-service.json'
 const app = getApps()[0] || initializeApp({ credential: cert(service as any) })
 
 const auth = getAuth(app)
-const firestore = getFirestore(app)
 
 export async function login(profile: DiscordProfile) {
     
@@ -37,8 +36,6 @@ export async function login(profile: DiscordProfile) {
             })
     
         }
-    
-        firestore.doc(`/users/${profile.id}`).set(profile)
     
         return auth.createCustomToken(profile.id)
 

@@ -20,8 +20,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     const jwt = profile ? await login(profile) : undefined
 
     jwt && response.setHeader('Set-Cookie', cokkie.serialize('token', jwt, {
-        httpOnly: true,
-        maxAge: 60 * 60,
+        maxAge: 60 * 3,
         sameSite: 'strict',
         path: '/'
 

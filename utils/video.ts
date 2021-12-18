@@ -1,9 +1,9 @@
 import type Video from '../@types/video'
 import type { ApiResponse, ResponseError } from '../@types/apiResponse'
 
-import type { PromiseSuspender } from './suspendPromise'
+import type { PromiseSuspender } from './suspend-promise'
 
-import suspendPromise from './suspendPromise'
+import suspendPromise from './suspend-promise'
 import { fetchData } from './fetch-data'
 
 export type VideoSuspender = PromiseSuspender<ApiResponse<Video>>
