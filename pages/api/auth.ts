@@ -15,9 +15,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     const { code } = request.query as Query
 
-    const [ access_token, refresh_token ] = code ? await getToken(code) : [ undefined, undefined ]
-    const profile = access_token ? await getProfile(access_token) : undefined
-    const jwt = profile ? await login(profile, access_token!, refresh_token!) : undefined
+    const [ access_token, refresh_token ] = code ? await getToken(code) : [ null, null ]
+    const profile = access_token ? await getProfile(access_token) : null
+    const jwt = profile ? await login(profile, access_token!, refresh_token!) : null
 
     jwt && response.setHeader('Set-Cookie', cokkie.serialize('token', jwt, {
         maxAge: 60 * 3,

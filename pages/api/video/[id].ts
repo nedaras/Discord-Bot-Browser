@@ -27,18 +27,13 @@ interface Snippet {
 
 }
 
-interface YoutubeApiResponse { 
-    items: [ { snippet: Snippet } ] | [ undefined ]
-
-}
+type YoutubeApiResponse = { items: [ { snippet: Snippet } ] | [ undefined ] }
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse<ApiResponse<Video>>) {
 
     const { id } = request.query as Query
+
     const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${key}`
-
-    console.log(`[pages/video/[id].ts] --> Incomming request with video id of: ${id}`);
-
     const data = (await fetchData<YoutubeApiResponse>(url).catch(() => ({ items: [] }))).items[0]
 
     if (data) return response.json({

@@ -1,7 +1,8 @@
 import type {FC } from 'react'
 import { Suspense, useState, useRef, useEffect } from 'react'
 
-import type { ApiResponse, ResponseError } from '../@types/apiResponse'
+import type { JsonObject } from '../@types'
+import type { ResponseError } from '../@types/apiResponse'
 
 import type { VideoSuspender } from '../utils/video'
 import { getVideo, getVideoId } from '../utils/video'
@@ -27,16 +28,16 @@ const SearchBar: FC<Props> = () => {
 }
 
 interface Video {
-    id: string | undefined
-    suspender: VideoSuspender | undefined
+    id: string | null
+    suspender: VideoSuspender | null
 
 }
 
 const Result: FC<ResultProps> = ({ input }) => {
 
     const [ { id, suspender }, setVideo ] = useState<Video>({ 
-        id: undefined, 
-        suspender: undefined 
+        id: null, 
+        suspender: null 
     })
 
     useEffect(() => {  
@@ -46,12 +47,12 @@ const Result: FC<ResultProps> = ({ input }) => {
             const videoId = getVideoId(input)
 
             if (videoId && videoId !== id) setVideo({ id: videoId, suspender: getVideo(videoId) })
-            else if (!videoId) setVideo({ id: videoId, suspender: undefined })
+            else if (!videoId) setVideo({ id: videoId || null, suspender: null })
 
             return
 
         }
-        setVideo({ id: undefined, suspender: undefined })
+        setVideo({ id: null, suspender: null })
 
     }, [ input ])
 
@@ -79,10 +80,6 @@ const Fetcher: FC<FetcherProps> = ({ video: { call } }) => {
 
 }
 
-function isResponseAnError<T>(response: ApiResponse<T>): response is ResponseError {
-
-    return (response as ResponseError).status !== undefined
-
-}
+const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).status !== undefined
 
 export default SearchBar

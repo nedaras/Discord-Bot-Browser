@@ -1,8 +1,7 @@
 import type { NextPage } from 'next'
+import Link from 'next/link'
 
 import type { DiscordProfile } from '../@types/discord'
-
-import Link from 'next/link'
 
 import { Suspense } from 'react'
 
