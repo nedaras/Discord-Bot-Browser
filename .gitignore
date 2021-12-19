@@ -35,3 +35,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# private files
+auth.json
+firebase-config.json
+firebase-service.json
+keys.json
