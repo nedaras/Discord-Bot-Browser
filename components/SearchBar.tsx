@@ -66,9 +66,9 @@ const Result: FC<ResultProps> = ({ input }) => {
 
 }
 
-const Fetcher: FC<FetcherProps> = ({ video }) => {
+const Fetcher: FC<FetcherProps> = ({ video: { call } }) => {
 
-    const data = video.call()
+    const data = call()
 
     if (isResponseAnError(data)) return <div className={styles['response']} >{ data.message }</div>
 

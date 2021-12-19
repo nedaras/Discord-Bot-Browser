@@ -7,38 +7,28 @@ import { getFirestore } from 'firebase-admin/firestore'
 import service from '../firebase-service.json'
 
 const app = getApps()[0] || initializeApp({ credential: cert(service as any) })
-
 const auth = getAuth(app)
+const firestore = getFirestore(app)
 
-export async function login(profile: DiscordProfile) {
+export async function login(profile: DiscordProfile, access_token: string, refresh_token: string) {
     
-    try {
+    const user = await auth.getUser(profile.id).catch(() => undefined)
 
-        const user = await auth.getUser(profile.id).catch(() => undefined)
+    if (user) auth.updateUser(profile.id, {
+        email: profile.email,
+        emailVerified: profile.verified,
+        displayName: profile.username
+    
+    }); else auth.createUser({
+        uid: profile.id,
+        email: profile.email,
+        emailVerified: profile.verified,
+        displayName: profile.username
+    
+    })
 
-        if (user) {
-    
-            auth.updateUser(profile.id, {
-                email: profile.email,
-                emailVerified: profile.verified,
-                displayName: profile.username
-        
-            })
-    
-        } else {
-    
-            auth.createUser({
-                uid: profile.id,
-                email: profile.email,
-                emailVerified: profile.verified,
-                displayName: profile.username
-        
-            })
-    
-        }
-    
-        return auth.createCustomToken(profile.id)
+    firestore.doc(`/users/${profile.id}`).set({ access_token, refresh_token })
 
-    } catch(error) { console.log(error) }
+    return auth.createCustomToken(profile.id, { access_token, refresh_token })
     
 }

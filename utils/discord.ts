@@ -20,7 +20,7 @@ interface ResponseError {
 
 }
 
-export async function getToken(code: string) {
+export async function getToken(code: string): Promise<[ string, string ] | [ null, null ]> {
 
     const data = {
         client_id: auth.client_id,
@@ -35,15 +35,21 @@ export async function getToken(code: string) {
     const response = await postData<DisocrdOAuth2Response | ResponseError>('https://discordapp.com/api/oauth2/token', data, 'x-www-form-urlencoded').catch(() => undefined)
     
 
-    if (response && !isResponseAnError(response)) return response.access_token
+    if (response && !isResponseAnError(response)) return [ response.access_token, response.refresh_token ]
+    return [ null, null ]
 
 }
 
 export async function getProfile(token: string){
 
-    const response = await fetchData<DiscordProfile | ResponseError>('https://discordapp.com/api/users/@me', `Bearer ${token}`).catch(() => undefined)
+    const response = await fetchData<DiscordProfile | ResponseError>('https://discordapp.com/api/users/@me', `Bearer ${token}`).catch((error) => {
+        console.log(error)
+        return undefined
+
+    })
 
     if (response && !isResponseAnError(response)) return response
+    return null
 
 }
 
