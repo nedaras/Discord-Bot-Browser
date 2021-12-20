@@ -14,7 +14,7 @@ const responseFailed: ResponseError = {
 
 }
 
-export const getVideo = (id: string) => suspendPromise(() => fetchData<ApiResponse<Video>>(`http://localhost:3000/api/video/${id}`).catch(() => responseFailed))
+export const getVideo = (id: string) => suspendPromise(() => fetchData<ApiResponse<Video>>(`http://localhost:3000/api/video?id=${id}`).catch(() => responseFailed))
 
 export function getVideoId(url: string) {
 

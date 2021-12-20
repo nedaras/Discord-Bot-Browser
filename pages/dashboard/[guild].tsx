@@ -22,8 +22,6 @@ interface ContentProps {
 
 const Page: NextPage = () => {
 
-
-
     return <Suspense fallback='Loading'>
         <Content profileSuspender={suspendPromise(getCurrentUserProfile)} />
     </Suspense>
