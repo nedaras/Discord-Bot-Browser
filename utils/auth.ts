@@ -10,25 +10,10 @@ const app = getApps()[0] || initializeApp({ credential: cert(service as any) })
 const auth = getAuth(app)
 const firestore = getFirestore(app)
 
-export async function login(profile: DiscordProfile, access_token: string, refresh_token: string) {
-    
-    const user = await auth.getUser(profile.id).catch(() => undefined)
+export async function login(profile: DiscordProfile, access_token: string) {
 
-    if (user) auth.updateUser(profile.id, {
-        email: profile.email,
-        emailVerified: profile.verified,
-        displayName: profile.username
-    
-    }); else auth.createUser({
-        uid: profile.id,
-        email: profile.email,
-        emailVerified: profile.verified,
-        displayName: profile.username
-    
-    })
+    firestore.doc(`/users/${profile.id}`).set({ access_token })
 
-    firestore.doc(`/users/${profile.id}`).set({ access_token, refresh_token })
-
-    return auth.createCustomToken(profile.id, { access_token, refresh_token })
+    return auth.createCustomToken(profile.id, { access_token })
     
 }

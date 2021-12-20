@@ -1,17 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { JsonObject } from '../../../@types'
 import type Video from '../../../@types/video'
 import type { ApiResponse } from '../../../@types/apiResponse'
 
 import { fetchData } from '../../../utils/fetch-data'
 
 import { youtube_api_key as key } from '../../../keys.json'
-
-interface Query {
-    [key: string]: string | string[]
-    id: string
-
-}
 
 interface Snippet {
     title: string
@@ -31,7 +26,7 @@ type YoutubeApiResponse = { items: [ { snippet: Snippet } ] | [ undefined ] }
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse<ApiResponse<Video>>) {
 
-    const { id } = request.query as Query
+    const { id } = request.query as JsonObject<string>
 
     const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${key}`
     const data = (await fetchData<YoutubeApiResponse>(url).catch(() => ({ items: [] }))).items[0]
