@@ -1,0 +1,17 @@
+@import './variable';
+
+.queue {
+
+    width: 100%;
+
+    font-size: 1.3em; 
+    
+    p {
+        margin: 0.5ch 0 2ch 0;
+
+        color: rgba($font-color, 0.5);
+        font-size: 0.7em;
+    
+    }
+
+}

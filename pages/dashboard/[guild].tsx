@@ -5,6 +5,7 @@ import type { FC } from 'react'
 import { Suspense } from 'react'
 
 import type { DiscordProfile } from '../../@types/discord'
+import type Video from '../../@types/video'
 
 import getUsersProfile from '../../utils/get-users-profile'
 import type { PromiseSuspender } from '../../utils/suspend-promise'
@@ -14,16 +15,37 @@ import { auth, getCurrentUser } from '../../utils/firebase'
 import { signOut } from 'firebase/auth'
 
 import cookie from 'js-cookie'
+import SearchBar from '../../components/SearchBar'
+import Queue from '../../components/Queue'
 
 interface ContentProps {
     profileSuspender: PromiseSuspender<DiscordProfile | null>
 
 }
 
+const songs: Video[] = [
+    { 
+        title: 'DIOR',
+        image_src: 'REV'
+    },
+    { 
+        title: 'Princess Bubblegum',
+        image_src: 'haroinfather – tema'
+    },
+    { 
+        title: 'Gassed Up',
+        image_src: 'Nebu Kiniza'
+    }
+
+]
+
 const Page: NextPage = () => {
 
     return <Suspense fallback='Loading'>
-        <Content profileSuspender={suspendPromise(getCurrentUserProfile)} />
+        <div>
+            <Content profileSuspender={suspendPromise(getCurrentUserProfile)} />
+            <Queue songs={songs} />
+        </div>
     </Suspense>
 
 }
@@ -48,8 +70,7 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
     }
 
     return <div>
-        Welcome { profile.username } <br />
-        <button onClick={() => signOut(auth)} >Log out</button>
+        <SearchBar onSongAdd={(url) => console.log(url)} />
 
     </div>
 
@@ -58,7 +79,9 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
 async function getCurrentUserProfile() {
 
     const user = await getCurrentUser()
-    return user ? getUsersProfile(user) : null
+    const profile = user ? getUsersProfile(user) : null
+
+    return profile
 
 }
 

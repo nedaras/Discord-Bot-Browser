@@ -45,17 +45,12 @@ async function loginWasSuccessfull() {
     const token = cookie.get('token')
     const guild = cookie.get('guild')
 
-    if (token && guild) {
+    const success = token && guild ? await signInWithCustomToken(auth, token).then(() => guild).catch(() => null) : null
 
-        const success = await signInWithCustomToken(auth, token).then(() => true).catch(() => false)
+    cookie.remove('token')
+    cookie.remove('guild')
 
-        cookie.remove('token')
-        cookie.remove('guild')
-
-        return success ? guild : null
-
-    }
-    return null
+    return success
 
 }
 

@@ -37,27 +37,21 @@ export async function getToken(code: string) {
     }
 
     const response = await postData<DisocrdOAuth2Response | ResponseError>('https://discordapp.com/api/oauth2/token', data, 'x-www-form-urlencoded').catch(() => null)
-
-    if (response && !isResponseAnError(response)) return response.access_token
-    return null
+    return response && !isResponseAnError(response) ? response.access_token : null
 
 }
 
 export async function getProfile(token: string){
 
     const response = await fetchData<DiscordProfile | ResponseError>('https://discordapp.com/api/users/@me', `Bearer ${token}`).catch(() => null)
-
-    if (response && !isResponseAnError(response)) return response
-    return null
+    return response && !isResponseAnError(response) ? response : null
 
 }
 
-export async function getGuilds(token: string){
+export async function isGuildValid(token: string, guild: string){
 
-    const response = await fetchData<Guild[] | ResponseError>('https://discordapp.com/api/users/@me/guilds', `Bearer ${token}`).catch((() => null))
-
-    if (response && !isResponseAnError(response)) return response
-    return null
+    const response = await fetchData<Guild[] | ResponseError>(`https://discordapp.com/api/users/@me/guilds/${guild}/member`, `Bearer ${token}`).catch((() => null))
+    return response && !isResponseAnError(response) ? true : false
 
 }
 

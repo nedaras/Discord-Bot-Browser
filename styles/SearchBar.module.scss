@@ -3,6 +3,7 @@
 .search-bar {
     
     max-width: 40rem;
+    margin: auto;
 
     input {
 
@@ -20,7 +21,12 @@
     .response,
     .image-response {
 
+        position: fixed;
+
         border-radius: 0 0 0.5rem 0.5rem;
+        
+        max-width: 40rem;
+        width: 100%;
 
         font-size: 1.2em;
         text-align: center;
@@ -31,7 +37,7 @@
 
     .response {
 
-        padding: 1rem 0;
+        padding: 1vh 0;
 
         background: $theme-color;
         
@@ -43,7 +49,7 @@
         background-position: center;
         
         div {
-            padding: 1rem 0;
+            padding: 1ch 0;
 
             background: rgba(black, 0.2);
             backdrop-filter: blur(2px);

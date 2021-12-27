@@ -1,5 +1,5 @@
-import type {FC } from 'react'
-import { Suspense, useState, useRef, useEffect } from 'react'
+import { FC } from 'react'
+import { Suspense, useState, useRef, useEffect, createContext } from 'react'
 
 import type { JsonObject } from '../@types'
 import type { ResponseError } from '../@types/apiResponse'
@@ -9,35 +9,39 @@ import { getVideo, getVideoId } from '../utils/video'
 
 import styles from '../styles/SearchBar.module.scss'
 
-interface Props {}
-interface ResultProps { input: string }
-interface FetcherProps { video: VideoSuspender }
+interface Props { onSongAdd: (url: string) => void }
+interface ResultProps { input: string, songAddEvent: () => void }
+interface FetcherProps { video: VideoSuspender, songAddEvent: () => void }
 
-const SearchBar: FC<Props> = () => {
+const SearchBar: FC<Props> = ({ onSongAdd }) => {
 
     const input = useRef<HTMLInputElement>(null)
     const [ value, setValue ] = useState('')
 
     const border = { borderRadius: value === '' ? '1rem' : '1rem 1rem 0 0' }
 
+    function songAddEvent() {
+
+        onSongAdd(value)
+
+        input.current!.value = ''
+        setValue('')
+
+    }
+
     return <div className={styles['search-bar']} >
         <input  style={border} placeholder='Put url of the youtube video...' onChange={() => setValue(input.current!.value.replace(/\s/g, '')) } ref={input} />
-        <Result input={value} />
+        <Result input={value} songAddEvent={songAddEvent} />
     </div>
 
 }
 
-interface Video {
-    id: string | null
-    suspender: VideoSuspender | null
+const Result: FC<ResultProps> = ({ input, songAddEvent }) => {
 
-}
-
-const Result: FC<ResultProps> = ({ input }) => {
-
-    const [ { id, suspender }, setVideo ] = useState<Video>({ 
+    const [ { id, suspender }, setVideo ] = useState<{ id: string | null, suspender: VideoSuspender | null }>({ 
         id: null, 
-        suspender: null 
+        suspender: null
+
     })
 
     useEffect(() => {  
@@ -59,7 +63,7 @@ const Result: FC<ResultProps> = ({ input }) => {
     if (input !== '') {
         
         return suspender ? <Suspense fallback={<div className={styles['response']} >...</div>} >
-            <Fetcher video={suspender} />
+            <Fetcher video={suspender} songAddEvent={songAddEvent} />
         </Suspense> : <div className={styles['response']} >We only accept Youtube URLs</div>
 
     }
@@ -67,9 +71,18 @@ const Result: FC<ResultProps> = ({ input }) => {
 
 }
 
-const Fetcher: FC<FetcherProps> = ({ video: { call } }) => {
+const Fetcher: FC<FetcherProps> = ({ video: { call }, songAddEvent }) => {
 
     const data = call()
+
+    useEffect(() => {
+
+        const eventHandler = (event: KeyboardEvent) => event.keyCode === 13 && !isResponseAnError(data) && songAddEvent()
+
+        window.addEventListener('keydown', eventHandler)
+        return () => window.removeEventListener('keydown', eventHandler)
+
+    }, [])
 
     if (isResponseAnError(data)) return <div className={styles['response']} >{ data.message }</div>
 
