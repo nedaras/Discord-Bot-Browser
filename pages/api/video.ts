@@ -6,10 +6,9 @@ import type { ApiResponse } from '../../@types/apiResponse'
 
 import { fetchData } from '../../utils/fetch-data'
 
-import keys from '../../keys.json'
-
 interface Snippet {
     title: string
+    channelTitle: string
     thumbnails: {
         standard: {
             url: string
@@ -30,11 +29,12 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     if (id) {
 
-        const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${keys.youtube_api_key}`
+        const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${process.env.YOUTUBE_API_KEY}`
         const data = (await fetchData<YoutubeApiResponse>(url).catch(() => ({ items: [] }))).items[0]
-    
+
         if (data) return response.json({
             title: data.snippet.title,
+            channel_title: data.snippet.channelTitle,
             image_src: data.snippet.thumbnails.standard.url
     
         })

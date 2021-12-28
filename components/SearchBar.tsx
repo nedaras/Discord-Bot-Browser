@@ -9,8 +9,8 @@ import { getVideo, getVideoId } from '../utils/video'
 
 import styles from '../styles/SearchBar.module.scss'
 
-interface Props { onSongAdd: (url: string) => void }
-interface ResultProps { input: string, songAddEvent: () => void }
+interface Props { onSongAdd: (id: string) => void }
+interface ResultProps { input: string, songAddEvent: (id: string) => void }
 interface FetcherProps { video: VideoSuspender, songAddEvent: () => void }
 
 const SearchBar: FC<Props> = ({ onSongAdd }) => {
@@ -20,9 +20,9 @@ const SearchBar: FC<Props> = ({ onSongAdd }) => {
 
     const border = { borderRadius: value === '' ? '1rem' : '1rem 1rem 0 0' }
 
-    function songAddEvent() {
+    function songAddEvent(id: string) {
 
-        onSongAdd(value)
+        onSongAdd(id)
 
         input.current!.value = ''
         setValue('')
@@ -63,7 +63,7 @@ const Result: FC<ResultProps> = ({ input, songAddEvent }) => {
     if (input !== '') {
         
         return suspender ? <Suspense fallback={<div className={styles['response']} >...</div>} >
-            <Fetcher video={suspender} songAddEvent={songAddEvent} />
+            <Fetcher video={suspender} songAddEvent={() => songAddEvent(id!)} />
         </Suspense> : <div className={styles['response']} >We only accept Youtube URLs</div>
 
     }

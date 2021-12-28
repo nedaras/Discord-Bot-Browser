@@ -1,7 +1,7 @@
 import type {NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import type { FC } from 'react'
+import { FC, useState } from 'react'
 import { Suspense } from 'react'
 
 import type { DiscordProfile } from '../../@types/discord'
@@ -12,40 +12,22 @@ import type { PromiseSuspender } from '../../utils/suspend-promise'
 import suspendPromise from '../../utils/suspend-promise'
 
 import { auth, getCurrentUser } from '../../utils/firebase'
-import { signOut } from 'firebase/auth'
+import { signOut, User } from 'firebase/auth'
 
 import cookie from 'js-cookie'
 import SearchBar from '../../components/SearchBar'
 import Queue from '../../components/Queue'
+import { postData } from '../../utils/fetch-data'
 
 interface ContentProps {
     profileSuspender: PromiseSuspender<DiscordProfile | null>
 
 }
 
-const songs: Video[] = [
-    { 
-        title: 'DIOR',
-        image_src: 'REV'
-    },
-    { 
-        title: 'Princess Bubblegum',
-        image_src: 'haroinfather – tema'
-    },
-    { 
-        title: 'Gassed Up',
-        image_src: 'Nebu Kiniza'
-    }
-
-]
-
 const Page: NextPage = () => {
 
     return <Suspense fallback='Loading'>
-        <div>
-            <Content profileSuspender={suspendPromise(getCurrentUserProfile)} />
-            <Queue songs={songs} />
-        </div>
+        <Content profileSuspender={suspendPromise(getCurrentUserProfile)} />
     </Suspense>
 
 }
@@ -69,8 +51,18 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
 
     }
 
+    async function addSong(id: string) {
+
+        const user = await getCurrentUser()
+        const access_token = user ? await getToken(user) : null
+
+        access_token && postData('http://localhost:3000/api/songs/create', { video_id: id, user_id: user!.uid, access_token })
+
+    }
+
     return <div>
-        <SearchBar onSongAdd={(url) => console.log(url)} />
+        <SearchBar onSongAdd={addSong} />
+        <Queue />
 
     </div>
 
@@ -79,9 +71,16 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
 async function getCurrentUserProfile() {
 
     const user = await getCurrentUser()
-    const profile = user ? getUsersProfile(user) : null
+    return user ? getUsersProfile(user) : null
 
-    return profile
+}
+
+async function getToken(user: User) {
+
+    const { claims } = await user.getIdTokenResult()
+    const { access_token } = claims
+
+    return typeof access_token === 'string' ? access_token : null
 
 }
 

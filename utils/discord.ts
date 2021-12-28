@@ -3,8 +3,6 @@ import type { Guild, DiscordProfile } from '../@types/discord'
 
 import { fetchData, postData } from './fetch-data'
 
-import auth from '../auth.json'
-
 interface DisocrdOAuth2Response {
     access_token: string
     expires_in: number
@@ -27,12 +25,12 @@ interface ResponseError {
 export async function getToken(code: string) {
 
     const data = {
-        client_id: auth.client_id,
-        client_secret: auth.client_secret,
+        client_id: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
         code,
-        redirect_uri: auth.encoded_redirect_uri,
-        scope: auth.encoded_scopes
+        redirect_uri: process.env.NEXT_PUBLIC_DISCORD_OAUTH2_ENCODED_REDIRECT_URI,
+        scope: process.env.NEXT_PUBLIC_DISCORD_OAUTH2_ENCODED_SCOPES
 
     }
 

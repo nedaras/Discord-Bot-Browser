@@ -1,4 +1,5 @@
 import type { User } from 'firebase/auth'
+import { DiscordProfile } from '../@types/discord'
 
 import { getProfile } from './discord'
 

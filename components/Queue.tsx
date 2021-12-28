@@ -1,23 +1,26 @@
 import type { NextPage } from 'next'
 
-import type { FC } from 'react'
+import { FC, useEffect } from 'react'
 
 import type Video from '../@types/video'
+import useSongs from '../hooks/useSongs'
 
 import styles from '../styles/Queue.module.scss'
 
-interface Props { songs: Video[] }
 interface SongsProps {
     title: string
     author: string
 
 }
 
-const Queue: NextPage<Props> = ({ songs }) => {
+const Queue: NextPage = () => {
+
+    const songsData = useSongs('')
+
+    if (!songsData) return null
 
     return <div className={styles.queue} >
-
-        { songs.map(({ title, image_src }, index) => <Song key={index} title={title} author={image_src} ></Song>) }
+        { songsData.map(({ title, author }, index) => <Song key={index} title={title} author={author} ></Song>) }
 
     </div>
 
