@@ -1,33 +1,35 @@
-import type {NextPage } from 'next'
+import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { FC, useState } from 'react'
+import type { FC } from 'react'
 import { Suspense } from 'react'
 
 import type { DiscordProfile } from '../../@types/discord'
-import type Video from '../../@types/video'
 
-import getUsersProfile from '../../utils/get-users-profile'
 import type { PromiseSuspender } from '../../utils/suspend-promise'
+import { getProfile } from '../../utils/discord'
 import suspendPromise from '../../utils/suspend-promise'
-
-import { auth, getCurrentUser } from '../../utils/firebase'
-import { signOut, User } from 'firebase/auth'
-
-import cookie from 'js-cookie'
-import SearchBar from '../../components/SearchBar'
-import Queue from '../../components/Queue'
 import { postData } from '../../utils/fetch-data'
 
+import { getCurrentUser } from '../../utils/firebase'
+import { User } from 'firebase/auth'
+
+import useSongsData from '../../hooks/use-songs-data'
+
+import SearchBar from '../../components/Search-bar'
+import Queue from '../../components/Queue'
+
+import cookie from 'js-cookie'
+
 interface ContentProps {
-    profileSuspender: PromiseSuspender<DiscordProfile | null>
+    profileSuspender: PromiseSuspender<[ string | undefined, string | null, DiscordProfile | null ]>
 
 }
 
 const Page: NextPage = () => {
 
     return <Suspense fallback='Loading'>
-        <Content profileSuspender={suspendPromise(getCurrentUserProfile)} />
+        <Content profileSuspender={suspendPromise(currentUser)} />
     </Suspense>
 
 }
@@ -35,9 +37,12 @@ const Page: NextPage = () => {
 const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
 
     const router = useRouter()
-    const profile = call()
+    const [ user_id, access_token, profile ] = call()
 
-    if (!profile) {
+    const songsData = useSongsData()
+
+    // ! u should only be logged in if u want to add music, but if u just want to inspect then u should be good to go
+    if (!(user_id && access_token && profile)) {
 
         cookie.set('guild', router.query.guild as string, {
             expires: 1 / 24 / 60,
@@ -51,27 +56,21 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
 
     }
 
-    async function addSong(id: string) {
-
-        const user = await getCurrentUser()
-        const access_token = user ? await getToken(user) : null
-
-        access_token && postData('http://localhost:3000/api/songs/create', { video_id: id, user_id: user!.uid, access_token })
-
-    }
-
     return <div>
-        <SearchBar onSongAdd={addSong} />
-        <Queue />
+        <SearchBar onSongAdd={(id) => postData('http://localhost:3000/api/songs/create', { video_id: id, user_id, access_token }) } />
+        { songsData && <Queue songs={songsData} songRemoved={(id) => postData('http://localhost:3000/api/songs/remove', { document_id: id, user_id, access_token })} /> }
 
     </div>
 
 }
 
-async function getCurrentUserProfile() {
+async function currentUser(): Promise<[ string | undefined, string | null, DiscordProfile | null ]> {
 
     const user = await getCurrentUser()
-    return user ? getUsersProfile(user) : null
+    const accessToken = user ? await getToken(user) : null
+    const profile = accessToken ? await getProfile(accessToken) : null
+
+    return [ user?.uid, accessToken, profile ]
 
 }
 

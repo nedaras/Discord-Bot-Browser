@@ -4,14 +4,31 @@
 
     width: 100%;
 
-    font-size: 1.3em; 
-    
+    font-size: 1.3em;
+
+    .box-container {
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+    }
+
+    p,
+    svg:hover {
+        color: rgba($font-color, 0.5);
+
+    }
+
     p {
         margin: 0.5ch 0 2ch 0;
-
-        color: rgba($font-color, 0.5);
         font-size: 0.7em;
-    
+
+    }
+
+    svg {
+        cursor: pointer;
+
     }
 
 }

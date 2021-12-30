@@ -2,14 +2,9 @@ import { firestore } from '../utils/firebase'
 import { onSnapshot, query, collection, orderBy } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 
-interface Song {
-    id: string
-    title: string
-    author: string
+import Song from '../@types/song'
 
-}
-
-export default function useSongs(guild: string) {
+export default function useSongs() {
 
     const [ songs, setSongs ] = useState<Song[] | null>(null)
 
@@ -18,7 +13,7 @@ export default function useSongs(guild: string) {
         onSnapshot(query(collection(firestore, 'songs'), orderBy('created_at')), (songs) => {
 
             const songsArray: Song[] = []
-            songs.forEach((song) => songsArray.push(song.data() as Song))
+            songs.forEach((song) => songsArray.push({ document_id: song.id, ...song.data() } as Song))
 
             setSongs(songsArray)
 

@@ -3,6 +3,8 @@ import type { User } from 'firebase/auth'
 import { initializeApp, getApps } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getPerformance } from 'firebase/performance'
+import { getAnalytics } from 'firebase/analytics'
 
 const app = getApps()[0] || initializeApp({
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,6 +19,9 @@ const app = getApps()[0] || initializeApp({
 
 const _auth = getAuth(app) 
 const _firestore = getFirestore(app)
+
+getPerformance(app)
+getAnalytics(app)
 
 export const getCurrentUser = (): Promise<User | null> => new Promise((resolve) => onAuthStateChanged(auth, resolve))
 

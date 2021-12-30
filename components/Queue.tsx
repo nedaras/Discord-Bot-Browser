@@ -1,36 +1,42 @@
-import type { NextPage } from 'next'
+import type { FC, MouseEventHandler } from 'react'
 
-import { FC, useEffect } from 'react'
+import type Song from '../@types/song'
 
-import type Video from '../@types/video'
-import useSongs from '../hooks/useSongs'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 
 import styles from '../styles/Queue.module.scss'
 
+interface Props {
+    songs: Song[]
+    songRemoved: (id: string) => void
+
+}
 interface SongsProps {
+    handleRemove: MouseEventHandler<SVGSVGElement>
     title: string
     author: string
 
 }
 
-const Queue: NextPage = () => {
-
-    const songsData = useSongs('')
-
-    if (!songsData) return null
+const Queue: FC<Props> = ({ songs, songRemoved }) => {
 
     return <div className={styles.queue} >
-        { songsData.map(({ title, author }, index) => <Song key={index} title={title} author={author} ></Song>) }
-
+        { songs.map(({ document_id, title, author }) => 
+            <SongContainer key={document_id} handleRemove={() => songRemoved(document_id)} title={title} author={author} />) 
+        }
     </div>
 
 }
 
-const Song: FC<SongsProps> = ({ title, author }) => {
+const SongContainer: FC<SongsProps> = ({ handleRemove, title, author }) => {
 
-    return <div>
-        { title }
-        <p>{ author }</p>
+    return <div className={styles['box-container']} >
+        <div>
+            { title }
+            <p>{ author }</p>
+        </div>
+        <FontAwesomeIcon icon={faTrash} onClick={handleRemove} />
     </div>
 
 }

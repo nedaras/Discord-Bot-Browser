@@ -7,7 +7,7 @@ import type { ResponseError } from '../@types/apiResponse'
 import type { VideoSuspender } from '../utils/video'
 import { getVideo, getVideoId } from '../utils/video'
 
-import styles from '../styles/SearchBar.module.scss'
+import styles from '../styles/Search-bar.module.scss'
 
 interface Props { onSongAdd: (id: string) => void }
 interface ResultProps { input: string, songAddEvent: (id: string) => void }
