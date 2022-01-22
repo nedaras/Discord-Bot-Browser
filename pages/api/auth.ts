@@ -22,6 +22,6 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     }))
 
-    response.redirect(jwt ? '/loggedin' : '/error')
+    response.redirect('/loggedin')
 
 }

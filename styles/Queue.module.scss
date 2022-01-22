@@ -6,28 +6,38 @@
 
     font-size: 1.3em;
 
+    overflow: hidden;
+
     .box-container {
 
         display: flex;
         justify-content: space-between;
         align-items: center;
 
-    }
+        p,
+        svg:hover {
+            color: rgba($font-color, 0.5);
+    
+        }
+    
+        p {
+            margin: 0.5ch 0 2ch 0;
+            font-size: 0.7em;
+    
+        }
+    
+        svg {
+            opacity: 0;
+    
+        }
 
-    p,
-    svg:hover {
-        color: rgba($font-color, 0.5);
-
-    }
-
-    p {
-        margin: 0.5ch 0 2ch 0;
-        font-size: 0.7em;
-
-    }
-
-    svg {
-        cursor: pointer;
+        &:hover { opacity: 1; }
+        &:hover svg {
+            cursor: pointer;
+    
+            opacity: 1;
+    
+        }
 
     }
 

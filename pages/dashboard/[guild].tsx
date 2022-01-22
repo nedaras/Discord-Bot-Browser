@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
 
-import type { FC } from 'react'
+import { FC, useState } from 'react'
 import { Suspense } from 'react'
 
 import type { DiscordProfile } from '../../@types/discord'
@@ -11,7 +10,7 @@ import { getProfile } from '../../utils/discord'
 import suspendPromise from '../../utils/suspend-promise'
 import { postData } from '../../utils/fetch-data'
 
-import { getCurrentUser } from '../../utils/firebase'
+import { auth, getCurrentUser } from '../../utils/firebase'
 import { User } from 'firebase/auth'
 
 import useSongsData from '../../hooks/use-songs-data'
@@ -19,7 +18,12 @@ import useSongsData from '../../hooks/use-songs-data'
 import SearchBar from '../../components/Search-bar'
 import Queue from '../../components/Queue'
 
-import cookie from 'js-cookie'
+import Login from '../../components/Login'
+import { AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/router'
+import { ApiResponse, ResponseError } from '../../@types/apiResponse'
+import { JsonObject } from '../../@types'
+import { ApiError } from 'next/dist/server/api-utils'
 
 interface ContentProps {
     profileSuspender: PromiseSuspender<[ string | undefined, string | null, DiscordProfile | null ]>
@@ -36,29 +40,36 @@ const Page: NextPage = () => {
 
 const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
 
-    const router = useRouter()
+    const [ showLogin, setLogin ] = useState(false)
+
     const [ user_id, access_token, profile ] = call()
 
-    const songsData = useSongsData()
+    const router = useRouter()
 
-    // ! u should only be logged in if u want to add music, but if u just want to inspect then u should be good to go
-    if (!(user_id && access_token && profile)) {
+    const songs = useSongsData(router.query.guild as string)
 
-        cookie.set('guild', router.query.guild as string, {
-            expires: 1 / 24 / 60,
-            sameSite: 'strict',
-            path: '/'
+    async function handleError(promise: ApiResponse<JsonObject>) {
 
-        })
+        const response = await promise
 
-        router.push('/login')
-        return null
+        if (!isResponseAnError(response)) return
+        
+        const { message } = response
+
+        ;(message === 'unauthorized' || message === 'missing some fields') && setLogin(true)
+        message === 'voice channel not found' && console.log('didnt joined a voice channel!')
 
     }
 
+    const addSong = (id: string) => { handleError(postData('http://localhost:3000/api/songs/create', { video_id: id, user_id, access_token, guild_id: router.query.guild })) }
+    const removeSong = (id: string) => { handleError(postData('http://localhost:3000/api/songs/remove', { document_id: id, user_id, access_token })) }
+
     return <div>
-        <SearchBar onSongAdd={(id) => postData('http://localhost:3000/api/songs/create', { video_id: id, user_id, access_token }) } />
-        { songsData && <Queue songs={songsData} songRemoved={(id) => postData('http://localhost:3000/api/songs/remove', { document_id: id, user_id, access_token })} /> }
+        <SearchBar songAdded={addSong} />
+        { songs && <Queue songs={songs} songRemoved={removeSong} /> }
+        <AnimatePresence initial={false} exitBeforeEnter={true} >
+            { showLogin && <Login onClose={() => setLogin(false)} /> }
+        </AnimatePresence>
 
     </div>
 
@@ -82,5 +93,7 @@ async function getToken(user: User) {
     return typeof access_token === 'string' ? access_token : null
 
 }
+
+const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).status !== undefined
 
 export default Page

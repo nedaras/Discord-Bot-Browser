@@ -7,6 +7,8 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons'
 
 import styles from '../styles/Queue.module.scss'
 
+import { motion, AnimatePresence } from 'framer-motion'
+
 interface Props {
     songs: Song[]
     songRemoved: (id: string) => void
@@ -22,22 +24,31 @@ interface SongsProps {
 const Queue: FC<Props> = ({ songs, songRemoved }) => {
 
     return <div className={styles.queue} >
-        { songs.map(({ document_id, title, author }) => 
-            <SongContainer key={document_id} handleRemove={() => songRemoved(document_id)} title={title} author={author} />) 
-        }
+        <AnimatePresence initial={false} >
+            { songs.map(({ document_id, title, author }) => 
+                <SongContainer key={document_id} handleRemove={() => songRemoved(document_id)} title={title} author={author} />) 
+            }
+        </AnimatePresence>
     </div>
 
 }
 
 const SongContainer: FC<SongsProps> = ({ handleRemove, title, author }) => {
 
-    return <div className={styles['box-container']} >
+    return <motion.div
+            className={styles['box-container']}
+
+            initial={{ x: '-100%' }} 
+            animate={{ x: 0 }} 
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }} 
+        >
         <div>
             { title }
             <p>{ author }</p>
         </div>
         <FontAwesomeIcon icon={faTrash} onClick={handleRemove} />
-    </div>
+    </motion.div>
 
 }
 

@@ -10,7 +10,7 @@ interface Snippet {
     title: string
     channelTitle: string
     thumbnails: {
-        standard: {
+        default: {
             url: string
             width: number
             height: number
@@ -35,7 +35,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
         if (data) return response.json({
             title: data.snippet.title,
             channel_title: data.snippet.channelTitle,
-            image_src: data.snippet.thumbnails.standard.url
+            image_src: data.snippet.thumbnails.default.url
     
         })
     

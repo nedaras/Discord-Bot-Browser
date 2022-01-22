@@ -1,0 +1,52 @@
+@import './variable';
+
+.login {
+
+    background: #2c2f33;
+    color: $font-color;
+
+    margin: auto;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+
+    a,
+    button {
+        color: $font-color;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 3px 5px 5px rgba(black, 0.2)
+
+    }
+
+    button {
+
+        outline: none;
+        border: none;
+        cursor: pointer;
+
+        border-radius: 5px;
+
+    }
+
+    .discord {
+
+        font-size: 1.2em;
+
+        margin: 1rem;
+
+        background: #7789da;
+        padding: 1.5vh 2vw;
+
+    }
+
+    .cancel {
+
+        background: #ff3860;
+        padding: 1vh 2vw;
+
+    }
+
+}

@@ -7,29 +7,40 @@ import type { ApiResponse, ResponseError } from '../../../@types/apiResponse'
 import { firestore } from '../../../utils/firebase-admin'
 import { FieldValue } from 'firebase-admin/firestore'
 
-import { fetchData } from '../../../utils/fetch-data'
+import { fetchData, postData } from '../../../utils/fetch-data'
+import { getProfile } from '../../../utils/discord'
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse<ResponseError | { success: true }>) {
 
-    const { video_id, user_id, access_token } = request.body as JsonObject<string | undefined>
+    const { video_id, user_id, access_token, guild_id } = request.body as JsonObject<string | undefined>
 
     if (request.method?.toUpperCase() !== 'POST') return response.status(404).json({ status: 400, message: 'only accpets "POST" requests' })
-    if (!(video_id && user_id && access_token)) return response.status(404).json({ status: 400, message: 'missing some fields' })
+    if (!(video_id && user_id && access_token && guild_id)) return response.status(404).json({ status: 400, message: 'missing some fields' })
     
+    const voice = await postData('http://localhost:4000/api/voice', { guild_id, user_id})
+    if (isResponseAnError(voice)) return response.status(voice.status).json(voice)
     const video = await fetchData<ApiResponse<Video>>(`http://localhost:3000/api/video?id=${video_id}`)
-
     if (isResponseAnError(video)) return response.status(video.status).json(video)
+
     if (access_token === (await firestore.doc(`/users/${user_id}`).get()).data()?.access_token) {
 
-        firestore.collection('songs').add({
-            id: video_id,
-            title: video.title,
-            author: video.channel_title,
-            created_at: FieldValue.serverTimestamp()
+        const profile = await getProfile(access_token)
 
-        })
+        if (profile) {
 
-        return response.status(200).json({ success: true })
+            firestore.collection('songs').add({
+                video_id: video_id,
+                guild_id,
+                creator_id: profile.id,
+                title: video.title,
+                author: video.channel_title,
+                created_at: FieldValue.serverTimestamp()
+    
+            })
+    
+            return response.status(200).json({ success: true })
+
+        }
 
     }
 

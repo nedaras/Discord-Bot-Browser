@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Suspense, useState, useRef, useEffect, createContext } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 
 import type { JsonObject } from '../@types'
 import type { ResponseError } from '../@types/apiResponse'
@@ -9,24 +9,24 @@ import { getVideo, getVideoId } from '../utils/video'
 
 import styles from '../styles/Search-bar.module.scss'
 
-interface Props { onSongAdd: (id: string) => void }
+interface Props { songAdded: (id: string) => void }
 interface ResultProps { input: string, songAddEvent: (id: string) => void }
 interface FetcherProps { video: VideoSuspender, songAddEvent: () => void }
 
-const SearchBar: FC<Props> = ({ onSongAdd }) => {
+const SearchBar: FC<Props> = ({ songAdded }) => {
 
     const input = useRef<HTMLInputElement>(null)
     const [ value, setValue ] = useState('')
 
     const border = { borderRadius: value === '' ? '1rem' : '1rem 1rem 0 0' }
 
-    function songAddEvent(id: string) {
+    const songAddEvent = (id: string) => {
 
-        onSongAdd(id)
+        songAdded(id)
 
         input.current!.value = ''
         setValue('')
-
+    
     }
 
     return <div className={styles['search-bar']} >
