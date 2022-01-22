@@ -22,25 +22,21 @@ export default async function handler(request: NextApiRequest, response: NextApi
     const video = await fetchData<ApiResponse<Video>>(`http://localhost:3000/api/video?id=${video_id}`)
     if (isResponseAnError(video)) return response.status(video.status).json(video)
 
-    if (access_token === (await firestore.doc(`/users/${user_id}`).get()).data()?.access_token) {
+    const profile = await getProfile(access_token)
 
-        const profile = await getProfile(access_token)
+    if (profile) {
 
-        if (profile) {
+        firestore.collection('songs').add({
+            guild_id,
+            user_id: profile.id,
+            video_id: video_id,
+            video_title: video.title,
+            video_author: video.channel_title,
+            created_at: FieldValue.serverTimestamp()
 
-            firestore.collection('songs').add({
-                guild_id,
-                user_id: profile.id,
-                video_id: video_id,
-                video_title: video.title,
-                video_author: video.channel_title,
-                created_at: FieldValue.serverTimestamp()
-    
-            })
-    
-            return response.status(200).json({ success: true })
+        })
 
-        }
+        return response.status(200).json({ success: true })
 
     }
 

@@ -10,7 +10,7 @@ interface ResponseType {
 export async function middleware(request: NextRequest) {
     
     const guild_id = request.nextUrl.pathname.split('/')[2]
-    const response = await postData<ResponseType | ResponseError>('http://localhost:4000/api/guild', { guild_id })
+    const response = await postData<ResponseType | ResponseError>('http://localhost:3000/api/discord/guild', { guild_id })
 
     if ((response as ResponseError).message !== undefined) return new Response('Lost?')
 

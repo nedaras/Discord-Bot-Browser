@@ -19,7 +19,7 @@ interface ContentProps {
 const Page: NextPage = () => {
 
     return <Suspense fallback='trying to login' >
-        <Content loginSuspender={suspendPromise(loginWasSuccessfull)} />
+        <Content loginSuspender={suspendPromise(wasLoginSuccessfull)} />
     </Suspense>
 
 }
@@ -40,7 +40,7 @@ const Content:FC<ContentProps> = ({ loginSuspender: { call } }) => {
 
 }
 
-async function loginWasSuccessfull() {
+async function wasLoginSuccessfull() {
 
     const token = cookie.get('token')
     const guild = cookie.get('guild')

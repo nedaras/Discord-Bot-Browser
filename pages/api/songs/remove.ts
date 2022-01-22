@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import type { JsonObject } from '../../../@types'
 import type { ResponseError } from '../../../@types/apiResponse'
+import { getProfile } from '../../../utils/discord'
 
 import { firestore } from '../../../utils/firebase-admin'
 
@@ -12,7 +13,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
     if (request.method?.toUpperCase() !== 'POST') return response.status(404).json({ status: 400, message: 'only accpets "POST" requests' })
     if (!(document_id && user_id && access_token)) return response.status(404).json({ status: 400, message: 'missing some fields' })
 
-    if (access_token === (await firestore.doc(`/users/${user_id}`).get()).data()?.access_token) {
+    const profile = await getProfile(access_token)
+
+    if (profile) {
 
         firestore.doc(`/songs/${document_id}`).delete()
 

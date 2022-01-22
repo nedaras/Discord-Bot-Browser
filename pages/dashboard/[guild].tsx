@@ -70,6 +70,7 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
         <AnimatePresence initial={false} exitBeforeEnter={true} >
             { showLogin && <Login onClose={() => setLogin(false)} /> }
         </AnimatePresence>
+        <button onClick={() => auth.signOut()} > Sign out</button>
 
     </div>
 
