@@ -17,7 +17,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
     if (request.method?.toUpperCase() !== 'POST') return response.status(404).json({ status: 400, message: 'only accpets "POST" requests' })
     if (!(video_id && user_id && access_token && guild_id)) return response.status(404).json({ status: 400, message: 'missing some fields' })
     
-    const voice = await postData('http://localhost:4000/api/voice', { guild_id, user_id})
+    const voice = await postData('http://localhost:4000/api/user', { guild_id, user_id})
     if (isResponseAnError(voice)) return response.status(voice.status).json(voice)
     const video = await fetchData<ApiResponse<Video>>(`http://localhost:3000/api/video?id=${video_id}`)
     if (isResponseAnError(video)) return response.status(video.status).json(video)
@@ -29,11 +29,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
         if (profile) {
 
             firestore.collection('songs').add({
-                video_id: video_id,
                 guild_id,
-                creator_id: profile.id,
-                title: video.title,
-                author: video.channel_title,
+                user_id: profile.id,
+                video_id: video_id,
+                video_title: video.title,
+                video_author: video.channel_title,
                 created_at: FieldValue.serverTimestamp()
     
             })
