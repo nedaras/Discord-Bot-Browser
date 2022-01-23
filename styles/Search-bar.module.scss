@@ -2,16 +2,18 @@
 
 .search-bar {
     
+    position: relative;
+
     max-width: 40rem;
-    margin: auto;
-    z-index: 1000;
+    width: 100%;
+    margin: 0 auto;
 
     input {
 
         border: none;
         outline: none;
 
-        padding: 0.5rem 1rem;
+        padding: 1ch 2ch;
         color: $theme-color;
         font-size: inherit;
 
@@ -22,10 +24,10 @@
     .response,
     .image-response {
 
-        position: fixed;
         z-index: 100;
+        position: absolute;
 
-        border-radius: 0 0 0.5rem 0.5rem;
+        border-radius: 0 0 1rem 1rem;
         
         max-width: 40rem;
         width: 100%;

@@ -23,7 +23,8 @@ import { AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { ApiResponse, ResponseError } from '../../@types/apiResponse'
 import { JsonObject } from '../../@types'
-import { ApiError } from 'next/dist/server/api-utils'
+import Header from '../../components/Header'
+import Profile from '../../components/Profile'
 
 interface ContentProps {
     profileSuspender: PromiseSuspender<[ string | undefined, string | null, DiscordProfile | null ]>
@@ -64,15 +65,19 @@ const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
     const addSong = (id: string) => { handleError(postData('http://localhost:3000/api/songs/create', { video_id: id, user_id, access_token, guild_id: router.query.guild })) }
     const removeSong = (id: string) => { handleError(postData('http://localhost:3000/api/songs/remove', { document_id: id, user_id, access_token })) }
 
-    return <div>
-        <SearchBar songAdded={addSong} />
+    return <>
+        <Header>
+            <SearchBar songAdded={addSong} />
+            <Profile profile={profile} ></Profile>
+        </Header>
+
         { songs && <Queue songs={songs} songRemoved={removeSong} /> }
+
         <AnimatePresence initial={false} exitBeforeEnter={true} >
             { showLogin && <Login onClose={() => setLogin(false)} /> }
         </AnimatePresence>
-        <button onClick={() => auth.signOut()} > Sign out</button>
 
-    </div>
+    </>
 
 }
 
