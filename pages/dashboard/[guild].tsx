@@ -10,7 +10,7 @@ import { getProfile } from '../../utils/discord'
 import suspendPromise from '../../utils/suspend-promise'
 import { postData } from '../../utils/fetch-data'
 
-import { auth, getCurrentUser } from '../../utils/firebase'
+import { getCurrentUser } from '../../utils/firebase'
 import { User } from 'firebase/auth'
 
 import useSongsData from '../../hooks/use-songs-data'
@@ -25,6 +25,7 @@ import { ApiResponse, ResponseError } from '../../@types/apiResponse'
 import { JsonObject } from '../../@types'
 import Header from '../../components/Header'
 import Profile from '../../components/Profile'
+import Notification from '../../components/Notification'
 
 interface ContentProps {
 	profileSuspender: PromiseSuspender<
@@ -42,6 +43,7 @@ const Page: NextPage = () => {
 
 const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
 	const [showLogin, setLogin] = useState(false)
+	const [notification, setNotification] = useState('')
 
 	const [user_id, access_token, profile] = call()
 
@@ -59,7 +61,7 @@ const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
 		;(message === 'unauthorized' || message === 'missing some fields') &&
 			setLogin(true)
 		message === 'voice channel not found' &&
-			console.log('didnt joined a voice channel!')
+			setNotification('You need to be in a voice channel!')
 	}
 
 	const addSong = (id: string) => {
@@ -93,6 +95,16 @@ const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
 
 			<AnimatePresence initial={false} exitBeforeEnter={true}>
 				{showLogin && <Login onClose={() => setLogin(false)} />}
+			</AnimatePresence>
+			<AnimatePresence initial={false} exitBeforeEnter={true}>
+				{notification !== '' && (
+					<Notification
+						delay={2000}
+						onTimeout={() => setNotification('')}
+					>
+						{notification}
+					</Notification>
+				)}
 			</AnimatePresence>
 		</>
 	)
