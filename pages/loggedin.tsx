@@ -12,46 +12,47 @@ import cookie from 'js-cookie'
 import Link from 'next/link'
 
 interface ContentProps {
-    loginSuspender: PromiseSuspender<string | null>
-
+	loginSuspender: PromiseSuspender<string | null>
 }
 
 const Page: NextPage = () => {
-
-    return <Suspense fallback='trying to login' >
-        <Content loginSuspender={suspendPromise(wasLoginSuccessfull)} />
-    </Suspense>
-
+	return (
+		<Suspense fallback="trying to login">
+			<Content loginSuspender={suspendPromise(wasLoginSuccessfull)} />
+		</Suspense>
+	)
 }
 
-const Content:FC<ContentProps> = ({ loginSuspender: { call } }) => {
+const Content: FC<ContentProps> = ({ loginSuspender: { call } }) => {
+	const guild = call()
 
-    const guild = call()
-
-    return guild ? <div>
-        you have successfully logged in <br />
-
-        <button><Link href={`/dashboard/${guild}`} >Continue</Link></button>
-
-    </div> : <div>
-        Weird error has accured!
-
-    </div>
-
+	return guild ? (
+		<div>
+			you have successfully logged in <br />
+			<button>
+				<Link href={`/dashboard/${guild}`}>Continue</Link>
+			</button>
+		</div>
+	) : (
+		<div>Weird error has accured!</div>
+	)
 }
 
 async function wasLoginSuccessfull() {
+	const token = cookie.get('token')
+	const guild = cookie.get('guild')
 
-    const token = cookie.get('token')
-    const guild = cookie.get('guild')
+	const success =
+		token && guild
+			? await signInWithCustomToken(auth, token)
+					.then(() => guild)
+					.catch(() => null)
+			: null
 
-    const success = token && guild ? await signInWithCustomToken(auth, token).then(() => guild).catch(() => null) : null
+	cookie.remove('token')
+	cookie.remove('guild')
 
-    cookie.remove('token')
-    cookie.remove('guild')
-
-    return success
-
+	return success
 }
 
 export default Page

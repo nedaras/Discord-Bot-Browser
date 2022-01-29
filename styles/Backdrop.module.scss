@@ -1,21 +1,19 @@
 @import './variable';
 
 .backdrop {
+	position: absolute;
+	top: 0;
+	left: 0;
 
-    position: absolute;
-    top: 0;
-    left: 0;
+	z-index: 1000;
 
-    z-index: 1000;
+	width: 100%;
+	height: 100%;
 
-    width: 100%;
-    height: 100%;
+	background: rgba(black, 0.3);
 
-    background: rgba(black, 0.3);
+	display: grid;
+	place-items: center;
 
-    display: grid;
-    place-items: center;
-
-    overflow: hidden;
-
+	overflow: hidden;
 }

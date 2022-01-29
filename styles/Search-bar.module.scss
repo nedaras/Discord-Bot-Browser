@@ -1,67 +1,56 @@
 @import './variable';
 
 .search-bar {
-    
-    position: relative;
+	position: relative;
 
-    max-width: 40rem;
-    width: 100%;
-    margin: 0 auto;
+	max-width: 40rem;
+	width: 100%;
+	margin: 0 auto;
 
-    input {
+	input {
+		border: none;
+		outline: none;
 
-        border: none;
-        outline: none;
+		padding: 1ch 2ch;
+		color: $theme-color;
+		font-size: inherit;
 
-        padding: 1ch 2ch;
-        color: $theme-color;
-        font-size: inherit;
+		width: 100%;
+	}
 
-        width: 100%;
-    
-    }
+	.response,
+	.image-response {
+		z-index: 100;
+		position: absolute;
 
-    .response,
-    .image-response {
+		border-radius: 0 0 1rem 1rem;
 
-        z-index: 100;
-        position: absolute;
+		max-width: 40rem;
+		width: 100%;
 
-        border-radius: 0 0 1rem 1rem;
-        
-        max-width: 40rem;
-        width: 100%;
+		font-size: 1.2em;
+		text-align: center;
 
-        font-size: 1.2em;
-        text-align: center;
+		color: $font-color;
+	}
 
-        color: $font-color;
+	.response {
+		padding: 1vh 0;
 
-    }
+		background: $theme-color;
+	}
 
-    .response {
+	.image-response {
+		background-size: cover;
+		background-position: center;
 
-        padding: 1vh 0;
+		div {
+			padding: 1ch 0;
 
-        background: $theme-color;
-        
-    }
+			background: rgba(black, 0.2);
+			backdrop-filter: blur(2px);
 
-    .image-response {
-
-        background-size: cover;
-        background-position: center;
-        
-        div {
-            padding: 1ch 0;
-
-            background: rgba(black, 0.2);
-            backdrop-filter: blur(2px);
-
-            border-radius: 0 0 0.5rem 0.5rem;
-        
-        }
-
-    }
-
+			border-radius: 0 0 0.5rem 0.5rem;
+		}
+	}
 }

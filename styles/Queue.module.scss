@@ -1,44 +1,38 @@
 @import './variable';
 
 .queue {
+	width: 100%;
 
-    width: 100%;
+	font-size: 1.3em;
 
-    font-size: 1.3em;
+	overflow: hidden;
 
-    overflow: hidden;
+	.box-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 
-    .box-container {
+		p,
+		svg:hover {
+			color: rgba($font-color, 0.5);
+		}
 
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+		p {
+			margin: 0.5ch 0 2ch 0;
+			font-size: 0.7em;
+		}
 
-        p,
-        svg:hover {
-            color: rgba($font-color, 0.5);
-    
-        }
-    
-        p {
-            margin: 0.5ch 0 2ch 0;
-            font-size: 0.7em;
-    
-        }
-    
-        svg {
-            opacity: 0;
-    
-        }
+		svg {
+			opacity: 0;
+		}
 
-        &:hover { opacity: 1; }
-        &:hover svg {
-            cursor: pointer;
-    
-            opacity: 1;
-    
-        }
+		&:hover {
+			opacity: 1;
+		}
+		&:hover svg {
+			cursor: pointer;
 
-    }
-
+			opacity: 1;
+		}
+	}
 }

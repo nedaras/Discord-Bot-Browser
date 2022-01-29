@@ -27,79 +27,96 @@ import Header from '../../components/Header'
 import Profile from '../../components/Profile'
 
 interface ContentProps {
-    profileSuspender: PromiseSuspender<[ string | undefined, string | null, DiscordProfile | null ]>
-
+	profileSuspender: PromiseSuspender<
+		[string | undefined, string | null, DiscordProfile | null]
+	>
 }
 
 const Page: NextPage = () => {
-
-    return <Suspense fallback='Loading'>
-        <Content profileSuspender={suspendPromise(currentUser)} />
-    </Suspense>
-
+	return (
+		<Suspense fallback="Loading">
+			<Content profileSuspender={suspendPromise(currentUser)} />
+		</Suspense>
+	)
 }
 
-const Content:FC<ContentProps> = ({ profileSuspender: { call } }) => {
+const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
+	const [showLogin, setLogin] = useState(false)
 
-    const [ showLogin, setLogin ] = useState(false)
+	const [user_id, access_token, profile] = call()
 
-    const [ user_id, access_token, profile ] = call()
+	const router = useRouter()
 
-    const router = useRouter()
+	const songs = useSongsData(router.query.guild as string)
 
-    const songs = useSongsData(router.query.guild as string)
+	async function handleError(promise: ApiResponse<JsonObject>) {
+		const response = await promise
 
-    async function handleError(promise: ApiResponse<JsonObject>) {
+		if (!isResponseAnError(response)) return
 
-        const response = await promise
+		const { message } = response
 
-        if (!isResponseAnError(response)) return
-        
-        const { message } = response
+		;(message === 'unauthorized' || message === 'missing some fields') &&
+			setLogin(true)
+		message === 'voice channel not found' &&
+			console.log('didnt joined a voice channel!')
+	}
 
-        ;(message === 'unauthorized' || message === 'missing some fields') && setLogin(true)
-        message === 'voice channel not found' && console.log('didnt joined a voice channel!')
+	const addSong = (id: string) => {
+		handleError(
+			postData('http://localhost:3000/api/songs/create', {
+				video_id: id,
+				user_id,
+				access_token,
+				guild_id: router.query.guild,
+			})
+		)
+	}
+	const removeSong = (id: string) => {
+		handleError(
+			postData('http://localhost:3000/api/songs/remove', {
+				document_id: id,
+				user_id,
+				access_token,
+			})
+		)
+	}
 
-    }
+	return (
+		<>
+			<Header>
+				<SearchBar songAdded={addSong} />
+				<Profile profile={profile}></Profile>
+			</Header>
 
-    const addSong = (id: string) => { handleError(postData('http://localhost:3000/api/songs/create', { video_id: id, user_id, access_token, guild_id: router.query.guild })) }
-    const removeSong = (id: string) => { handleError(postData('http://localhost:3000/api/songs/remove', { document_id: id, user_id, access_token })) }
+			{songs && <Queue songs={songs} songRemoved={removeSong} />}
 
-    return <>
-        <Header>
-            <SearchBar songAdded={addSong} />
-            <Profile profile={profile} ></Profile>
-        </Header>
-
-        { songs && <Queue songs={songs} songRemoved={removeSong} /> }
-
-        <AnimatePresence initial={false} exitBeforeEnter={true} >
-            { showLogin && <Login onClose={() => setLogin(false)} /> }
-        </AnimatePresence>
-
-    </>
-
+			<AnimatePresence initial={false} exitBeforeEnter={true}>
+				{showLogin && <Login onClose={() => setLogin(false)} />}
+			</AnimatePresence>
+		</>
+	)
 }
 
-async function currentUser(): Promise<[ string | undefined, string | null, DiscordProfile | null ]> {
+async function currentUser(): Promise<
+	[string | undefined, string | null, DiscordProfile | null]
+> {
+	const user = await getCurrentUser()
+	const accessToken = user ? await getToken(user) : null
+	const profile = accessToken ? await getProfile(accessToken) : null
 
-    const user = await getCurrentUser()
-    const accessToken = user ? await getToken(user) : null
-    const profile = accessToken ? await getProfile(accessToken) : null
-
-    return [ user?.uid, accessToken, profile ]
-
+	return [user?.uid, accessToken, profile]
 }
 
 async function getToken(user: User) {
+	const { claims } = await user.getIdTokenResult()
+	const { access_token } = claims
 
-    const { claims } = await user.getIdTokenResult()
-    const { access_token } = claims
-
-    return typeof access_token === 'string' ? access_token : null
-
+	return typeof access_token === 'string' ? access_token : null
 }
 
-const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).status !== undefined
+const isResponseAnError = (
+	response: JsonObject | ResponseError
+): response is ResponseError => (response as ResponseError).status !== undefined
 
 export default Page

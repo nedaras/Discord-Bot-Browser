@@ -1,52 +1,43 @@
 @import './variable';
 
 .login {
+	background: #2c2f33;
+	color: $font-color;
 
-    background: #2c2f33;
-    color: $font-color;
+	margin: auto;
+	border-radius: 2px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 1.5rem;
 
-    margin: auto;
-    border-radius: 2px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem;
+	a,
+	button {
+		color: $font-color;
+		font-weight: 600;
+		text-decoration: none;
+		box-shadow: 3px 5px 5px rgba(black, 0.2);
+	}
 
-    a,
-    button {
-        color: $font-color;
-        font-weight: 600;
-        text-decoration: none;
-        box-shadow: 3px 5px 5px rgba(black, 0.2)
+	button {
+		padding: 1.2ch 3ch;
 
-    }
+		outline: none;
+		border: none;
+		cursor: pointer;
 
-    button {
+		border-radius: 5px;
+	}
 
-        padding: 1.2ch 3ch;
+	.discord {
+		font-size: 1.2em;
 
-        outline: none;
-        border: none;
-        cursor: pointer;
+		margin: 1rem;
 
-        border-radius: 5px;
+		background: #7789da;
+	}
 
-    }
-
-    .discord {
-
-        font-size: 1.2em;
-
-        margin: 1rem;
-
-        background: #7789da;
-
-    }
-
-    .cancel {
-
-        background: #ff3860;
-
-    }
-
+	.cancel {
+		background: #ff3860;
+	}
 }
