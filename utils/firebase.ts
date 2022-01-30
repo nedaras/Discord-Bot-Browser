@@ -19,8 +19,7 @@ const app =
 const _auth = getAuth(app)
 const _firestore = getFirestore(app)
 
-export const getCurrentUser = (): Promise<User | null> =>
-	new Promise((resolve) => onAuthStateChanged(auth, resolve))
+export const getCurrentUser = (): Promise<User | null> => new Promise((resolve) => onAuthStateChanged(auth, resolve))
 
 export const auth = _auth
 export const firestore = _firestore

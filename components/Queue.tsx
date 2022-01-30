@@ -24,12 +24,7 @@ const Queue: FC<Props> = ({ songs, songRemoved }) => {
 		<div className={styles.queue}>
 			<AnimatePresence initial={false}>
 				{songs.map(({ document_id, video_title, video_author }) => (
-					<SongContainer
-						key={document_id}
-						handleRemove={() => songRemoved(document_id)}
-						title={video_title}
-						author={video_author}
-					/>
+					<SongContainer key={document_id} handleRemove={() => songRemoved(document_id)} title={video_title} author={video_author} />
 				))}
 			</AnimatePresence>
 		</div>

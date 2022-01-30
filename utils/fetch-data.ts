@@ -1,9 +1,6 @@
 import type { JsonObject } from '../@types'
 
-export async function fetchData<T extends JsonObject = JsonObject>(
-	url: string,
-	auth?: string
-): Promise<T> {
+export async function fetchData<T extends JsonObject = JsonObject>(url: string, auth?: string): Promise<T> {
 	const request = await fetch(url, {
 		method: 'get',
 		headers: {
@@ -15,11 +12,7 @@ export async function fetchData<T extends JsonObject = JsonObject>(
 	return request.json()
 }
 
-export async function postData<T extends JsonObject = JsonObject>(
-	url: string,
-	data: JsonObject,
-	contentType: 'json' | 'x-www-form-urlencoded' = 'json'
-): Promise<T> {
+export async function postData<T extends JsonObject = JsonObject>(url: string, data: JsonObject, contentType: 'json' | 'x-www-form-urlencoded' = 'json'): Promise<T> {
 	const request = await fetch(`${url}`, {
 		method: 'post',
 		body: contentType === 'json' ? JSON.stringify(data) : urlEncoded(data),

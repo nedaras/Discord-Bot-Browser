@@ -8,13 +8,7 @@ interface Props {
 
 const Backdrop: FC<Props> = ({ children, onClick }) => {
 	return (
-		<motion.div
-			className={styles.backdrop}
-			onClick={onClick}
-			initial={{ scale: 0 }}
-			animate={{ scale: 1 }}
-			exit={{ scale: 0 }}
-		>
+		<motion.div className={styles.backdrop} onClick={onClick} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
 			{children}
 		</motion.div>
 	)

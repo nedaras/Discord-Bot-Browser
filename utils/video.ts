@@ -13,15 +13,16 @@ const responseFailed: ResponseError = {
 	message: 'server cant fetch api',
 }
 
-export const getVideo = (id: string) =>
-	suspendPromise(() =>
-		fetchData<ApiResponse<Video>>(
-			`http://localhost:3000/api/video?id=${id}`
-		).catch(() => responseFailed)
-	)
+export const getVideo = (input: string) => suspendPromise(() => fetchData<ApiResponse<Video>>(getURL(input)).catch(() => responseFailed))
 
-export function getVideoId(url: string) {
-	const regex =
-		/(http|https):\/\/(www\.)?(youtube\.com)\/watch\?v=(\S{11})(\S+)?/
+function getURL(input: string) {
+	const id = getVideoId(input)
+
+	if (id) return `http://localhost:3000/api/youtube/video?id=${id}`
+	return `http://localhost:3000/api/youtube/search?query=${input}`
+}
+
+function getVideoId(url: string) {
+	const regex = /(http|https):\/\/(www\.)?(youtube\.com)\/watch\?v=(\S{11})(\S+)?/
 	if (regex.test(url)) return url.match(regex)![4]
 }

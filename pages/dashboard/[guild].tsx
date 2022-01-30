@@ -28,9 +28,7 @@ import Profile from '../../components/Profile'
 import Notification from '../../components/Notification'
 
 interface ContentProps {
-	profileSuspender: PromiseSuspender<
-		[string | undefined, string | null, DiscordProfile | null]
-	>
+	profileSuspender: PromiseSuspender<[string | undefined, string | null, DiscordProfile | null]>
 }
 
 const Page: NextPage = () => {
@@ -43,7 +41,7 @@ const Page: NextPage = () => {
 
 const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
 	const [showLogin, setLogin] = useState(false)
-	const [notification, setNotification] = useState('')
+	const [notification, setNotification] = useState<string | null>(null)
 
 	const [user_id, access_token, profile] = call()
 
@@ -58,10 +56,9 @@ const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
 
 		const { message } = response
 
-		;(message === 'unauthorized' || message === 'missing some fields') &&
-			setLogin(true)
-		message === 'voice channel not found' &&
-			setNotification('You need to be in a voice channel!')
+		;(message === 'unauthorized' || message === 'missing some fields') && setLogin(true)
+		message === 'voice channel not found' && setNotification('You need to be in a voice channel!')
+		message === 'fetch failed' && setNotification('It seems that Muzikyte bot is turned off at the moment')
 	}
 
 	const addSong = (id: string) => {
@@ -96,23 +93,12 @@ const Content: FC<ContentProps> = ({ profileSuspender: { call } }) => {
 			<AnimatePresence initial={false} exitBeforeEnter={true}>
 				{showLogin && <Login onClose={() => setLogin(false)} />}
 			</AnimatePresence>
-			<AnimatePresence initial={false} exitBeforeEnter={true}>
-				{notification !== '' && (
-					<Notification
-						delay={2000}
-						onTimeout={() => setNotification('')}
-					>
-						{notification}
-					</Notification>
-				)}
-			</AnimatePresence>
+			<Notification onTimeout={() => setNotification(null)}>{notification}</Notification>
 		</>
 	)
 }
 
-async function currentUser(): Promise<
-	[string | undefined, string | null, DiscordProfile | null]
-> {
+async function currentUser(): Promise<[string | undefined, string | null, DiscordProfile | null]> {
 	const user = await getCurrentUser()
 	const accessToken = user ? await getToken(user) : null
 	const profile = accessToken ? await getProfile(accessToken) : null
@@ -127,8 +113,6 @@ async function getToken(user: User) {
 	return typeof access_token === 'string' ? access_token : null
 }
 
-const isResponseAnError = (
-	response: JsonObject | ResponseError
-): response is ResponseError => (response as ResponseError).status !== undefined
+const isResponseAnError = (response: JsonObject | ResponseError): response is ResponseError => (response as ResponseError).status !== undefined
 
 export default Page

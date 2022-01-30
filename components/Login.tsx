@@ -24,27 +24,14 @@ const Login: FC<Props> = ({ onClose }) => {
 
 	return (
 		<Backdrop onClick={onClose}>
-			<div
-				className={styles.login}
-				onClick={(event) => event.stopPropagation()}
-			>
+			<div className={styles.login} onClick={(event) => event.stopPropagation()}>
 				<h3>You need to be logged in to edit this queue.</h3>
 				<Link href={loginURI}>
-					<motion.button
-						className={styles.discord}
-						onClick={createCookie}
-						whileHover={{ y: -5 }}
-						whileTap={{ scale: 0.9 }}
-					>
+					<motion.button className={styles.discord} onClick={createCookie} whileHover={{ y: -5 }} whileTap={{ scale: 0.9 }}>
 						Log In with Discord
 					</motion.button>
 				</Link>
-				<motion.button
-					className={styles.cancel}
-					onClick={onClose}
-					whileHover={{ y: -5 }}
-					whileTap={{ scale: 0.9 }}
-				>
+				<motion.button className={styles.cancel} onClick={onClose} whileHover={{ y: -5 }} whileTap={{ scale: 0.9 }}>
 					Cancel
 				</motion.button>
 			</div>
